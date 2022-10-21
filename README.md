@@ -3,6 +3,8 @@ Testing video encoding in a browser.
 
 This web-page will create a procedural animation that is encoded as video.
 
+[LIVE PAGE HERE](https://canonical.github.io/inbrowser-encode-test/)
+
 # Usage
 
 This test was specifically created to check if your browser will use the GPU to help with the encoding, so called Hardware-Accelerated-Encoding.
