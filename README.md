@@ -35,10 +35,10 @@ Many things are hard-coded at the moment:
 
 SOFTware encoding, HARDware encoding or FAILed encoding.
 
-| OS          | Browser         | VP8  | VP9  | H264 | H265 |
-|-------------|-----------------|:----:|:----:|:----:|:----:|
-|Ubuntu 22.10 | chrome r105-hwa | SOFT | HARD | HARD | FAIL |
-|Ubuntu 22.10 | firefox 105.0.1 | SOFT | FAIL | FAIL | FAIL |
+| OS          | GPU       | Browser         | VP8  | VP9  | H264 | H265 |
+|-------------|-----------|-----------------|:----:|:----:|:----:|:----:|
+|Ubuntu 22.10 | ADL-S GT1 | chrome r105-hwa | SOFT | HARD | HARD | FAIL |
+|Ubuntu 22.10 | ADL-S GT1 | firefox 105.0.1 | SOFT | FAIL | FAIL | FAIL |
 
 # Author
 
