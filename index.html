@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<!-- Video Encoding Test -->
+<!-- Genererates a 1280x720 video from a procedural animation in a canvas. -->
+<!-- By Bram Stolk (bram.stolk@canonical.com) -->
+
+<HTML>
+	<HEAD>
+		<META charset="utf-8">
+		<TITLE>Video Encoding Test</TITLE>
+	</HEAD>
+
+	<BODY>
+		<H1>Video Encoding Test</H1>
+		<P>
+			The purpose of this page is to evaluate video encoding capabilities.
+			Using a GPU monitor (like 
+			<A HREF="https://manpages.ubuntu.com/manpages/kinetic/man1/intel_gpu_top.1.html">intel_gpu_top</A>)
+			you can check whether the GPU is used to accelerate encoding.
+			The content for the video is procedurally generated, so that no simultaneous decoding is performed
+			that could muddle test results.
+			Check the encoding result by pressing play on the video below, or by
+			<A HREF="#" class=dllink download="encoded.webm">downloading</a> the resulting WEBM file.
+		</P>
+		<BUTTON class=gobutton>ENCODE</BUTTON>
+		<INPUT type="radio" id="vp8"  name="enco" value= "vp8" /><label>vp8 </label>
+		<INPUT type="radio" id="vp9"  name="enco" value= "vp9" checked /><label>vp9 </label>
+		<INPUT type="radio" id="h264" name="enco" value="h264" /><label>h264</label>
+		<INPUT type="radio" id="h265" name="enco" value="h265" /><label>h265</label>
+		<P><CANVAS class=painting width=1280 height=720 style='width:640px;height:360px' border=1 /></P>
+		<P><VIDEO controls class=encvid width=640 height=360 border=1 /></P>
+	  </BODY>
+
+	<SCRIPT>
+
+// Global variables.
+var canvas = document.querySelector('.painting'); // Our procedural drawing.
+var ctx = canvas.getContext('2d'); // Drawing context.
+var encvid = document.querySelector('.encvid'); // Resulting video.
+var dllink = document.querySelector('.dllink'); // Download Link.
+var gobutton = document.querySelector('.gobutton'); // Encode button.
+var done; // Set to true when done encoding.
+var drawCount; // Counts the number of frames that have been drawn so far.
+
+// drawing state
+var p0x = 10 // Point 0
+var p0y = 20
+var p1x = 60 // Point 1
+var p1y = 120
+var d0x = -10 // Velocity 0
+var d0y =  15
+var d1x =  14 // Velocity 1
+var d1y =   9
+
+// procgen drawing.
+function draw()
+{
+	// move line-endpoints.
+	p0x += d0x
+	p0y += d0y
+	p1x += d1x
+	p1y += d1y
+	// bounce against frame edges.
+	if (p0x>=1280 || p0x<0) d0x *= -1;
+	if (p0y>= 720 || p0y<0) d0y *= -1;
+	if (p1x>=1280 || p1x<0) d1x *= -1;
+	if (p1y>= 720 || p1y<0) d1y *= -1;
+	// render
+	const palette = [ "#ff0000","#00ff00","#ffff00", "#ff00ff" ];
+	ctx.beginPath();
+	ctx.strokeStyle = palette[ (drawCount>>3) & 3 ];
+	ctx.moveTo(p0x,p0y);
+	ctx.lineTo(p1x,p1y);
+	ctx.stroke(); 
+}
+
+// encoding trigger.
+gobutton.addEventListener('click', function() {
+	done = false;
+	drawCount = 0;
+	var encval = document.querySelector('input[name="enco"]:checked').value;
+	console.log("ENCODING AS", encval);
+	ctx.fillStyle = "black";
+	ctx.fillRect(0,0,1280,720);
+	try {
+		var canvasStream = canvas.captureStream(60);
+		var mstream = new window.MediaStream(canvasStream.getVideoTracks());
+		var mediaRecorder = new MediaRecorder(mstream, {
+			mimeType: 'video/webm; codecs=' + encval,
+			videoBitsPerSecond: 5000000
+		});
+		gobutton.disabled = true;
+		// 60fps intervals when drawing.
+		var ival = setInterval(function() {
+			draw();
+			drawCount += 1;
+		}, 1000 / 60);
+	} catch(e)
+	{
+		// Not all codecs are supported, so throw error onto the screen.
+		console.log(e);
+		alert(e);
+	}
+	var chunks = [];
+	mediaRecorder.addEventListener('dataavailable', function(event) {
+		chunks.push(event.data);
+		if (drawCount>=300 && !done)
+		{
+			done = true;
+			gobutton.disabled = false;
+			console.log("DONE!");
+			mediaRecorder.stop();
+			clearInterval(ival);
+			var blob = new Blob(chunks),
+			url = URL.createObjectURL(blob);
+			dllink.href = url;
+			encvid.src = url;
+		}
+	});
+
+	// Kick off canvas-recording, dump data every 1000ms.
+	mediaRecorder.start(1000);
+});
+	</SCRIPT>
+</HTML>

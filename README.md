@@ -27,6 +27,7 @@ Many things are hard-coded at the moment:
  * video resolution set to 1280x720.
  * video FPS set to 60Hz.
  * video length set to 300 frames.
+ * video bps set to 5M.
 
 # Author
 
