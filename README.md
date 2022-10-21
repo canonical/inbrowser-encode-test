@@ -19,7 +19,6 @@ Run as root `$ sudo intel_gpu_top` to check the Video usage.
 
 Before encoding, select which encoder you want to use.
 Note that at the time of writing, not all browsers support all formats, and you may get an error when you encode.
-I've found that both Firefox and Chromium are happy to do VP9, which is the default encoder.
 
 After encoding, you can either download the resulting video, or play it in the video-player at the bottom of the page.
 
