@@ -31,6 +31,15 @@ Many things are hard-coded at the moment:
  * video length set to 300 frames.
  * video bps set to 5M.
 
+# Test Results
+
+SOFTware encoding, HARDware encoding or FAILed encoding.
+
+| OS          | Browser         | VP8  | VP9  | H264 | H265 |
+|-------------|-----------------|:----:|:----:|:----:|:----:|
+|Ubuntu 22.10 | chrome r105-hwa | SOFT | HARD | HARD | FAIL |
+|Ubuntu 22.10 | firefox 105.0.1 | SOFT | FAIL | FAIL | FAIL |
+
 # Author
 
 Bram Stolk (bram.stolk@canonical.com)
